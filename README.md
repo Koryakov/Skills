@@ -4,7 +4,7 @@ A home for reusable AI coding skills and agents, organized by tool.
 
 | Folder | Tool | Contents |
 |---|---|---|
-| `claude/` | Claude Code | `skills/orchestrate` multi-agent pattern selector + 10 agent roles under `agents/`. |
+| `claude/` | Claude Code | `skills/orchestrate` multi-agent pattern selector, `skills/agents-status` background-job status report + 10 agent roles under `agents/`. |
 
 Future tools (Codex, Cursor, etc.) get their own top-level folder.
 
@@ -16,7 +16,7 @@ Copy `claude/` into a project as `.claude/` (or symlink it):
 cp -r claude /path/to/project/.claude
 ```
 
-Claude Code then auto-discovers the `orchestrate` skill and the agent roles.
+Claude Code then auto-discovers the skills and the agent roles.
 Roles are defined in `claude/agents/README.md`.
 
 ## Contributing
