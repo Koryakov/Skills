@@ -9,6 +9,9 @@ Skill definition: [SKILL.md](SKILL.md) · Role definitions: [../../agents/README
 
 ![Orchestration in one flow](images/overview.png)
 
+> **Diagram reflects skill v1.0.** Predates P8, the cost arithmetic, and the
+> result-collection rule. See the revision history in [SKILL.md](SKILL.md).
+
 ## How it manages context
 
 The main session stays clean. A single `brief.md` (task, constraints, file
@@ -18,6 +21,10 @@ curated findings return to the main session.
 
 ![How the skill manages context](images/context-management.png)
 
+> **Diagram reflects skill v1.0.** Shows each agent writing its own findings file;
+> since v2.0 the read-only roles return findings in their final message and the
+> coordinator persists them.
+
 ## How it picks model and effort
 
 Cheap settings for supporting work; stronger models and higher effort only
@@ -26,6 +33,9 @@ result is weak, the same role is rerun at a higher tier — not padded with new
 agents.
 
 ![Model and effort selection by role](images/model-and-effort.png)
+
+> **Diagram reflects skill v1.0.** Effort cannot be set when spawning an agent —
+> it comes from the role file. Since v2.1 only `model` is a spawn-time lever.
 
 ## The patterns
 
