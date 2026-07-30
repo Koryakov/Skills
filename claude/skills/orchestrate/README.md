@@ -1,7 +1,7 @@
 # Orchestrate — agent pattern selection
 
 A Claude Code skill that reads a task, picks the **cheapest orchestration
-pattern that fits** (P0–P7), and runs only the roles and resources actually
+pattern that fits** (P0–P8), and runs only the roles and resources actually
 needed. The coordinator is the main session; specialized subagents do the work
 in isolated context windows and return only their findings.
 
@@ -28,9 +28,12 @@ curated findings return to the main session.
 ## How it picks model and effort
 
 Cheap settings for supporting work; stronger models and higher effort only
-where depth matters (analysis, architecture, criticism, verification). If a
-result is weak, the same role is rerun at a higher tier — not padded with new
-agents.
+where depth matters (analysis, architecture, criticism, verification). Both are
+pinned in each role's own file. If a result is weak, the same role is rerun —
+not padded with new agents — but only the **model** can be changed when starting
+an agent. Effort and turn limits come from the role file and cannot be
+overridden at spawn time, so an upgraded model still runs under the role's
+original limits.
 
 ![Model and effort selection by role](images/model-and-effort.png)
 
@@ -85,3 +88,46 @@ A lead plus teammates own layers (API, UI, tests) and message each other
 directly. Use for independent workstreams that need teammate↔teammate coordination.
 
 ![Team Feature Ownership](images/p7-team-feature-ownership.png)
+
+### P8 · Recon-then-Multi-Plan
+Three built-in Explore agents map the ground in parallel, then two or three
+built-in Plan agents each design a solution under a **deliberately different
+bias** — security-first, minimal-change pragmatic, event-driven — and the
+coordinator picks one or merges them. Use when the design space is genuinely
+open and you want real alternatives rather than one plan and its variations.
+Don't use it when a single approach obviously suffices: that is P3.
+
+Plan output is long (~15.5k characters, the largest of any role) and Plan
+cannot write files, so the coordinator persists each variant.
+
+> No rendered diagram yet — schema below.
+
+```mermaid
+flowchart TD
+    C1([Coordinator]) --> E1[Explore · area A]
+    C1 --> E2[Explore · area B]
+    C1 --> E3[Explore · area C]
+    E1 --> C2([Coordinator · merges recon])
+    E2 --> C2
+    E3 --> C2
+    C2 --> P1[Plan · security-first]
+    C2 --> P2[Plan · minimal-change]
+    C2 --> P3[Plan · event-driven]
+    P1 --> C3([Coordinator · picks or merges])
+    P2 --> C3
+    P3 --> C3
+```
+
+## Operating rules the diagrams don't show
+
+- **Cost is stated before spawning** — the sum of each planned agent's measured
+  median, so the work can be vetoed before it runs. Treat it as a middle
+  estimate: observed runs land roughly fourfold either side of it.
+- **Every launched agent is collected** before the turn ends. An uncollected
+  agent is spend with nothing to show for it.
+- **Read-only roles return findings in their final message** and the coordinator
+  writes the files — most roles have no ability to write.
+- **A returned "not found" is unverified** until the coordinator confirms it, and
+  a near-empty final message counts as no answer at all.
+- **Scratch files live outside the repository by default**, so they cannot be
+  committed by accident.
