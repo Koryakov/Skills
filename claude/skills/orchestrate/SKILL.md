@@ -62,14 +62,18 @@ they topped out at "400k+" while one real session extrapolated to ~4M.
 Subagents start isolated — they share via files or coordinator relay.
 
 ```
-.claude/orchestration/<task-slug>/
+<session scratch dir>/<task-slug>/   # DEFAULT — outside the repo
   brief.md               # coordinator writes once: task, constraints, file pointers
   findings-<subject>.md  # coordinator persists each agent's returned findings
   report.md              # synthesizer output, or the coordinator's own reduce step
 ```
 
-That dir is **not** gitignored by default — add the `.gitignore` entry or these files
-land in commits.
+`<scratch>` = the session scratch dir named in the environment; failing that, any temp dir
+outside the working tree. Pass agents **absolute** paths — the 88/88 brief read-rate was
+measured on in-repo paths. Use in-repo `.claude/orchestration/<task-slug>/` **only** when
+artifacts must outlive the session or be shared: it is **not** gitignored, so add the
+entry first — 12 scratch files were observed staged in a real repo. Create the dir only
+when files are actually needed.
 
 | Rule | |
 |---|---|
@@ -78,17 +82,20 @@ land in commits.
 | `brief.md` | reference it instead of repeating context — 88/88 read when named. It does not shorten prompts (median 2,444 vs 2,405); its value is consistency |
 | Small results | under ~1 page → final message only; skip files |
 | Built-in Explore/Plan | skip CLAUDE.md — restate any binding project rule in their prompt |
-| Cleanup | 12 of 25 real scratch dirs held only an abandoned `brief.md` — delete the dir once its report is collected |
+| Return contract — the reverse case | a global or session instruction rule can **override** a role's own output contract: an `explorer` whose role file says "final message = the map only" returned a single `// <reason>` annotation and nothing else, converting a paid run into zero. Restate the required final-message shape in **every** spawn prompt. Prevention is unproven — 9 spawns, 0 failures, against an ~18% base rate for `explorer`, so that is weak evidence; the §4 detector is what actually catches it |
+| Cleanup | measured twice — 12 of 25, then 9 of 20 real scratch dirs held only an abandoned `brief.md`. Delete the dir once its report is collected |
 
 ## 4. Execution rules
 
 | Rule | |
 |---|---|
 | Result collection | a backgrounded spawn returns a launch stub, not the result — **collect and act on every launched agent, then end the turn**. 299 of 427 results were stubs whose collection is unverifiable, and in one session the user had to ask for two finished designs the coordinator never gathered. Use `SendMessage` to pull an async or paused agent. An uncollected agent is 100% wasted spend |
+| Empty result — detect, don't trust prevention | a **collected** final message under ~200 chars, or opening with `//`, is **absent**, not weak — escalation does not apply. (A launch stub is not this: that is uncollected, see above.) Re-prompt a fresh agent with an explicit output contract rather than resuming — a resume carries the corrupted context forward, and in the field case it resumed straight into the same wrong answer for a second full run. Cause may be an instruction conflict (§3) or a turn cap; the detector fires either way |
+| Distrust negatives | "not found" / "not merged" / "not present" from a capped read-only role is **unverified** — confirm with one grep or git query before acting on it. A 15-turn haiku recon agent produced a confident false negative that a single `git merge-base --is-ancestor` disproved |
 | Mid-loop checkpoints | P3–P5, P8: after collecting a stage, **end the turn and yield** — not report-and-continue. Never spend past a failed stage |
 | Escalation | weak result → re-run the **same role**, not more agents. `model` is the **only** per-invocation lever — `effort` and `maxTurns` come from the role file and cannot be set at spawn time (an `effort` key is silently dropped). `model: opus` is a no-op on the opus-pinned roles (analyzer, critic, planner, hypothesizer): for those use `model: fable`, narrow the subject, or edit the role file. Overriding `model` leaves the rest pinned — an escalated `explorer` still runs at `effort: low` with a 15-turn cap |
 | Built-in Explore vs custom explorer | built-in inherits the session model (opus 47/81 observed) and skips CLAUDE.md; custom `explorer` is haiku-pinned, `effort: low`, 15-turn cap. Neither is measured as cheaper overall — pick on those mechanics, not on a cost claim |
-| Reuse / continuation | `SendMessage` resumes an agent paused mid-run or async-launched **and** follows up on a finished one — don't respawn |
+| Reuse / continuation | `SendMessage` resumes an agent paused mid-run or async-launched **and** follows up on a finished one — don't respawn, **except after an empty result** (below), where a fresh spawn beats carrying a corrupted context forward. A resume bills as a **full second run** (measured: 57k to collect after a 57k first run, for one wrong answer), so prompt correctly once rather than planning to resume |
 | Background | agents background by **default** — pass `run_in_background: false` for a synchronous run when the result is needed before continuing. Collect explicitly either way |
 | Worktrees | `isolation: worktree` — mainly parallel implementers; a single implementer may also use it |
 
@@ -104,6 +111,10 @@ land in commits.
 - Reach for P7 only when teammates must message each other directly; otherwise P6.
 
 ---
+**v2.2** (2026-07-30) — from field use: spawn prompts must restate the role's return
+contract (a global rule can silently override it); empty/annotation-only results are
+absent, not weak; negatives from capped recon roles are unverified; a `SendMessage`
+resume bills a full second run; scratch defaults outside the repo.
 **v2.1** (2026-07-30) — `effort` is not a spawn-time lever (was wrongly advised);
 background is the default, not a hint; nesting note records the `Bash` escape route and
 the remote gating of the depth default.
