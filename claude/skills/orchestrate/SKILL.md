@@ -42,8 +42,12 @@ of any role, and cannot write — the coordinator persists it (§3).
 
 ## 2. Cost and time — state both before spawning
 
-**Sum each planned agent's role median.** Treat the total as a **lower bound** (21% cost
-sample, 89 of 427 runs; the unsampled ones are async launches, which skew long).
+**Sum each planned agent's role median — then read the total by scope.** The medians describe
+*substantial* tasks. For open-ended work the sum is a **lower bound** (21% cost sample, 89 of
+427 runs; the unsampled ones are async launches, which skew long). For a **narrow, single-
+question** prompt it is an **over**-estimate: a measured 2-explorer test projected ≥76k and
+~2 min and actually cost 31k in 19 s — 41% of tokens, a tenth of the time. State which way
+you are reading it.
 
 ```
 p50 tokens/run: planner 103.6k · implementer 88k (p90 197.6k) · analyzer 82k ·
@@ -95,8 +99,23 @@ Measured contrast: 3 analyzers in one wave = 198k in **8.2 min**; 2 sequential c
 three critics on one unfixed artifact return triplicate findings, because a later round's
 value comes from reviewing the *revised* artifact.
 
-State agents, steps, expected compute minutes, and the token lower bound in **one line**,
-every time. Get an explicit go/no-go when **either** the total exceeds **~30 min** or **any
+**Log line — emit this before the first spawn, every time**, in exactly this shape so it is
+greppable in transcripts later:
+
+```
+orchestrate v{VER} · P{N} · {lineup} · {k} steps · ~{m} min · ≥{t}k
+   VER from the footer, N the pattern number, lineup e.g. "2x explorer parallel"
+```
+
+Note the placeholders are deliberately unfilled: a fully-formed example here would echo into
+every transcript that loads this file and inflate any later grep for real emissions — the same
+contamination that makes P0–P8 string counts worthless. Never put a realistic sample log line
+in this file.
+
+The version prefix is what makes log audits attributable — without it, which ruleset was in
+force has to be guessed from prose, which is unreliable (P0–P8 string counts are worthless:
+this file's own table echoes into transcripts). State agents, steps, expected compute
+minutes, and the token lower bound in that one line, every time. Get an explicit go/no-go when **either** the total exceeds **~30 min** or **any
 single step** does — a lone critic reached **52.2 min**, so a one-step run clears a
 sum-based gate and still overruns badly. Recomputed on measured figures: P3 ≈ 29 min +
 planner, P4 ≈ 71 min (3 × [10.9 + 12.9]). A bar below ~30 min would fire on nearly every
@@ -159,32 +178,4 @@ when files are actually needed.
 - Reach for P7 only when teammates must message each other directly; otherwise P6.
 
 ---
-**v2.3** (2026-08-04) — time as well as cost. Agent-compute is stated alongside tokens, summed
-over **sequential steps** (a P4 implementer→critic pair is two steps, not one); width is
-sub-linear in time, so partitionable work buys thoroughness by widening — but that does not
-transfer to P4. Go/no-go at ~30 min, firing per **step** as well as on the total, because one
-critic alone hit 52.2 min. Per-role durations come from 113 subagent transcripts at full
-coverage, extracted twice with identical results; the 21% token sample is recorded as
-**unimprovable** from transcripts so it is not retried. `model` overrides must be checked
-against the role file first — 9 of 19 were silent no-ops. Collected stages are handed over
-labelled not-yet-reviewed; round 1 is a full sweep and only round 2+ may be scoped; later
-rounds gated on Critical/Major, with a clean-but-thin report treated as weak rather than
-clean, and P4 excepted because its artifact mutates between rounds.
-Confirmed working, left alone: `brief.md` referencing rose to 58% of prompts; the coordinator
-persisted findings 86 times.
-Two designs **rejected**: named depth modes (quick/standard/deep) — `effort` is dropped at
-spawn time so the dial has no lever, and unenforceable rules go unused here (escalation: 0 of
-427 runs); and pre-launching the next stage to overlap the user's reading — no §1 fan-out
-pattern has a following critic, and it would spend past an unreviewed stage.
-Gap this file cannot fix: the skill loaded in only 3 of 32 sessions that ran agents — the
-essential rules were mirrored into the always-loaded global instructions.
-**v2.2** (2026-07-30) — from field use: spawn prompts must restate the role's return
-contract (a global rule can silently override it); empty/annotation-only results are
-absent, not weak; negatives from capped recon roles are unverified; a `SendMessage`
-resume bills a full second run; scratch defaults outside the repo.
-**v2.1** (2026-07-30) — `effort` is not a spawn-time lever (was wrongly advised);
-background is the default, not a hint; nesting note records the `Bash` escape route and
-the remote gating of the depth default.
-**v2.0** (2026-07-30) — nesting premise and Explore cost claim corrected; tiers replaced
-by summed role medians; findings now coordinator-persisted; result collection and P8
-added; escalation narrowed; checkpoints yield; scratch dir documented as not ignored.
+**v2.3.1** (2026-08-04) — history in `CHANGELOG.md`
