@@ -70,28 +70,41 @@ long as its **slowest** member, so width costs **sub-linear** time — not zero,
 creeps up as you widen a right-tailed distribution. Sequential steps are what you wait for:
 
 ```
-agent-compute ≈ Σ over sequential steps ( slowest agent in that step )
+agent-span ≈ Σ over sequential steps ( slowest agent in that step )
   a "step" = one barrier: agents that must finish before the next starts.
-  P4's implementer→critic pair is TWO steps: 10.9 + 12.9, NOT max(10.9, 12.9).
+  P4's implementer→critic pair is TWO steps: 14.3 + 12.9, NOT max(14.3, 12.9).
 
-MEASURED MINUTES — 113 subagent transcripts since 2026-07-30, full coverage (not a
-sample), extracted twice with identical results. Prefer these over the p50/max on the
-token line above, which came from a 21% parent-transcript sample and understates tails.
+MEASURED MINUTES — 212 subagent transcripts, 2026-07-30 to 2026-08-11, full coverage
+(not a sample). Prefer these over the p50/max on the token line above, which came from a
+21% parent-transcript sample.
   role              n     p50    p90     max
-  analyzer         49    10.6   16.5    23.2
-  critic           27    12.9   21.3    52.2
-  implementer      13    10.9   18.6    24.4
-  general-purpose   8     6.7   11.5    11.5
-  explorer          8     1.2    2.0     2.0
-  verifier          5     5.1   36.5    36.5   <- n=5; p90 IS the max, one point. Weak.
-  ALL ROLES       113    10.6   17.4    52.2
+  analyzer         94    10.4   16.0    42.4
+  critic           65    12.9   20.7   708.4
+  implementer      22    14.3   21.6   105.2
+  general-purpose  11     6.7   11.5    15.2
+  explorer         10     0.9    2.0     2.0
+  verifier          6     8.2   36.5    36.5   <- n=6; p90 IS the max, one point. Weak.
+  claude            2    25.3      -       -   <- not a §1 role; listed only so the rows
+                                                  reconcile to 212. Never plan with it.
+  planner           1    14.9      -       -   <- n=1. Placeholder-grade.
+  researcher        1     4.4      -       -   <- n=1. Placeholder-grade.
+  ALL ROLES       212    11.3   18.6   708.4   (rows sum to 212)
 
-still unmeasured — planner, synthesizer, hypothesizer, documenter, built-in Explore/Plan:
+EVERY figure above is a WALL SPAN — last timestamp minus first — so all of them, p50 and
+p90 included, carry whatever idle time an agent spent paused. The tail carries most of it:
+the 708-min critic is a pause, not 12 h of compute. Plan with p50, treat p90 as soft, and
+read max only as "this role can stall" — never as a compute estimate.
+
+Placeholder-grade rows (n<=2) are not medians. Any total that includes one must be stated
+as placeholder-bearing — see P3 below.
+
+still unmeasured — synthesizer, hypothesizer, documenter, built-in Explore/Plan:
   substitute the nearest measured role and label it a placeholder. Never invent a figure.
 ```
 
-This is **agent-compute only**. P3–P5 and P8 end the turn at each stage (§4), so *elapsed*
-time also includes however long the reply takes — don't present compute as elapsed.
+These are **agent-side spans**, not your wall-clock. P3–P5 and P8 end the turn at each stage
+(§4), so the time you actually experience adds however long each reply takes. Quote the
+agent-side figure and label it as such; never present it as total elapsed.
 
 Measured contrast: 3 analyzers in one wave = 198k in **8.2 min**; 2 sequential critic rounds
 = 100k in **19.9 min** — half the tokens, 2.4× the wait. Where work is genuinely partitionable
@@ -114,12 +127,20 @@ in this file.
 
 The version prefix is what makes log audits attributable — without it, which ruleset was in
 force has to be guessed from prose, which is unreliable (P0–P8 string counts are worthless:
-this file's own table echoes into transcripts). State agents, steps, expected compute
+this file's own table echoes into transcripts). State agents, steps, expected agent-span
 minutes, and the token lower bound in that one line, every time. Get an explicit go/no-go when **either** the total exceeds **~30 min** or **any
-single step** does — a lone critic reached **52.2 min**, so a one-step run clears a
-sum-based gate and still overruns badly. Recomputed on measured figures: P3 ≈ 29 min +
-planner, P4 ≈ 71 min (3 × [10.9 + 12.9]). A bar below ~30 min would fire on nearly every
-pattern and decay into noise; the per-step check is what catches the long tail.
+single step** does. Recomputed on measured spans: **P3 ≈ 50 min** (14.9 + 14.3 + 8.2 + 12.9
+— placeholder-bearing, planner is n=1), **P4 ≈ 90 min** (3 × [14.3 + 12.9] + verifier 8.2).
+Be honest about what follows: the **total** trigger fires on both computable pipeline
+patterns, so for P3 and P4 a go/no-go is effectively mandatory rather than exceptional — say
+so plainly instead of presenting it as a rare event. P5 cannot be totalled at all
+(hypothesizer is unmeasured); nearest-role substitution puts it at 30–38 min, straddling the
+bar, so treat it as gate-triggering and label the total placeholder-bearing. The **per-step**
+trigger is the one that catches surprises, and its evidence is thin: only verifier's p90
+(36.5, n=6, a single point) exceeds 30 min, so treat it as a stall guard, not a calibrated
+threshold. P1 and P2 are single-wave and normally clear both; P6 is **two** steps — the
+analyzer wave, then the synthesizer — and synthesizer is unmeasured, so total it with a
+labelled placeholder rather than assuming it clears.
 
 ## 3. How agents share context
 
@@ -146,7 +167,7 @@ when files are actually needed.
 | `brief.md` | reference it instead of repeating context — 88/88 read when named. It does not shorten prompts (median 2,444 vs 2,405); its value is consistency |
 | Small results | under ~1 page → final message only; skip files |
 | Built-in Explore/Plan | skip CLAUDE.md — restate any binding project rule in their prompt |
-| Return contract — the reverse case | a global or session instruction rule can **override** a role's own output contract: an `explorer` whose role file says "final message = the map only" returned a single `// <reason>` annotation and nothing else, converting a paid run into zero. Restate the required final-message shape in **every** spawn prompt. Prevention is unproven — 9 spawns, 0 failures, against an ~18% base rate for `explorer`, so that is weak evidence; the §4 detector is what actually catches it |
+| Return contract — the reverse case | a global or session instruction rule can **override** a role's own output contract: an `explorer` whose role file says "final message = the map only" returned a single `// <reason>` annotation and nothing else, converting a paid run into zero. Restate the required final-message shape in **every** spawn prompt. Prevention is unproven — 9 spawns, 0 failures, against an ~18% base rate for `explorer`, so that is weak evidence; the §4 detector is what actually catches it. Restate it for **every** role, not recon only: thin results track spawn volume rather than role — the 8 observed were `analyzer` (3) and `critic` (5) simply because those were the roles being run, both at rates *below* explorer's base rate. Keep the restatement to one line so it costs nothing: name the required final-message shape, add "nothing else", and forbid a `//` annotation as the message's opening or its entirety, matching the §4 detector. Do not paste a fully-formed literal contract into this file — same contamination rule as the log line in §2 |
 | Cleanup | measured twice — 12 of 25, then 9 of 20 real scratch dirs held only an abandoned `brief.md`. Delete the dir once its report is collected |
 
 ## 4. Execution rules
@@ -178,4 +199,4 @@ when files are actually needed.
 - Reach for P7 only when teammates must message each other directly; otherwise P6.
 
 ---
-**v2.3.1** (2026-08-04) — history in `CHANGELOG.md`
+**v2.3.2** (2026-08-11)
