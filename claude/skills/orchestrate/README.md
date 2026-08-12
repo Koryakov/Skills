@@ -5,12 +5,13 @@ pattern that fits** (P0–P8), and runs only the roles and resources actually
 needed. The coordinator is the main session; specialized subagents do the work
 in isolated context windows and return only their findings.
 
-Skill definition: [SKILL.md](SKILL.md) · Role definitions: [../../agents/README.md](../../agents/README.md)
+Skill definition: [SKILL.md](SKILL.md) — currently **v2.3.2** · Role definitions: [../../agents/README.md](../../agents/README.md)
 
 ![Orchestration in one flow](images/overview.png)
 
 > **Diagram reflects skill v1.0.** Predates P8, the cost arithmetic, and the
-> result-collection rule. See the revision history in [SKILL.md](SKILL.md).
+> result-collection rule. [SKILL.md](SKILL.md) carries the current version marker
+> only — the change history is the commit log.
 
 ## How it manages context
 
@@ -121,8 +122,18 @@ flowchart TD
 ## Operating rules the diagrams don't show
 
 - **Cost is stated before spawning** — the sum of each planned agent's measured
-  median, so the work can be vetoed before it runs. Treat it as a middle
-  estimate: observed runs land roughly fourfold either side of it.
+  median, so the work can be vetoed before it runs. It is not a middle estimate:
+  for open-ended work it is a lower bound, and for one narrow question it
+  over-estimates. Which way it is being read is stated with it.
+- **Expected time is stated too, and it gates the run** — measured spans summed
+  over the *sequential* steps, since a parallel wave lasts only as long as its
+  slowest member. Over roughly 30 minutes in total, or in any one step, and the
+  run needs an explicit go-ahead first. On current figures both pipeline
+  patterns (P3, P4) clear that bar on their own, so for those the go-ahead is
+  effectively mandatory rather than exceptional.
+- **The measured times are spans, not compute** — they include any time an agent
+  spent paused, so they are quoted as agent-side spans and never presented as
+  the total wait, which also includes the coordinator's replies.
 - **Every launched agent is collected** before the turn ends. An uncollected
   agent is spend with nothing to show for it.
 - **Read-only roles return findings in their final message** and the coordinator
