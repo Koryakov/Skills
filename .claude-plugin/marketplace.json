@@ -1,0 +1,38 @@
+{
+  "name": "koryakov-skills",
+  "owner": {
+    "name": "mk",
+    "email": "mikhail.koryakov@gmail.com"
+  },
+  "metadata": {
+    "description": "Reusable Claude Code skills and agent roles"
+  },
+  "plugins": [
+    {
+      "name": "claude-toolkit",
+      "displayName": "Claude Toolkit",
+      "description": "Multi-agent orchestration (P0-P8 pattern selector), background-job status reporting, and 10 reusable agent roles (analyzer, critic, implementer, explorer, planner, researcher, synthesizer, hypothesizer, documenter, verifier).",
+      "source": "./",
+      "strict": false,
+      "category": "productivity",
+      "homepage": "https://github.com/Koryakov/Skills/tree/main/claude",
+      "repository": "https://github.com/Koryakov/Skills",
+      "skills": [
+        "./claude/skills/orchestrate",
+        "./claude/skills/agents-status"
+      ],
+      "agents": [
+        "./claude/agents/analyzer.md",
+        "./claude/agents/critic.md",
+        "./claude/agents/documenter.md",
+        "./claude/agents/explorer.md",
+        "./claude/agents/hypothesizer.md",
+        "./claude/agents/implementer.md",
+        "./claude/agents/planner.md",
+        "./claude/agents/researcher.md",
+        "./claude/agents/synthesizer.md",
+        "./claude/agents/verifier.md"
+      ]
+    }
+  ]
+}
