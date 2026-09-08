@@ -1,7 +1,7 @@
 ---
 name: analyzer
 description: Deep single-question analysis with full reasoning. Use for root-cause analysis, correctness/performance questions, evaluating one hypothesis, or auditing one partition of a larger sweep — when the answer needs evidence-chained reasoning, not just locating code. Returns conclusion plus evidence chain. Not for broad recon (explorer) or web facts (researcher).
-model: opus
+model: claude-opus-5
 effort: high
 tools: Read, Glob, Grep, Bash
 color: purple
@@ -22,4 +22,4 @@ Mission: one assigned question, answered with an evidence chain.
 If evidence is insufficient for a conclusion, say so and name exactly what's missing.
 
 ---
-**v1.0** (2026-09-08)
+**v1.1** (2026-09-08)

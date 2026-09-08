@@ -1,7 +1,7 @@
 ---
 name: implementer
 description: Writes code for a specified, scoped change — plan in hand or spec unambiguous. Use to execute one implementation step or a bounded feature slice. Returns diff summary plus self-check results. Not for design decisions, exploration, or full verification (verifier does that).
-model: sonnet
+model: claude-sonnet-5
 effort: medium
 permissionMode: acceptEdits
 tools: Read, Glob, Grep, Edit, Write, Bash, PowerShell
@@ -22,4 +22,4 @@ Mission: execute the spec exactly; surface spec gaps, don't resolve them yoursel
 A change without a self-check is not done — at minimum prove it parses/imports.
 
 ---
-**v1.0** (2026-09-08)
+**v1.1** (2026-09-08)

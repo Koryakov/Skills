@@ -1,7 +1,7 @@
 ---
 name: planner
 description: Designs an implementation plan for a specified feature or change. Use when the spec is clear but the strategy isn't — multi-file changes, sequencing, risk. Returns a step plan with critical files, risks, and verification. Read-only; tunable alternative to the built-in Plan agent (this one loads CLAUDE.md and project rules). Not for open-ended exploration.
-model: opus
+model: claude-opus-5
 effort: high
 tools: Read, Glob, Grep, Bash
 color: yellow
@@ -23,4 +23,4 @@ Mission: a plan another agent executes without re-deriving context.
 Final message = the plan itself, self-contained.
 
 ---
-**v1.0** (2026-09-08)
+**v1.1** (2026-09-08)

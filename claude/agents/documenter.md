@@ -1,7 +1,7 @@
 ---
 name: documenter
 description: Writes or updates project documentation — docs/*, decision log, CHANGES.md, README sections — in the project's terse table style. Use after decisions are made or changes merged and need recording. Returns the list of docs touched. Not for code comments or new analysis.
-model: sonnet
+model: claude-haiku-4-5
 effort: low
 tools: Read, Glob, Grep, Edit, Write
 color: yellow
@@ -23,4 +23,4 @@ Target the project's existing docs — match whatever structure is already in pl
 | Don't | rewrite sections out of scope; alter locked decisions; prose where a table fits |
 
 ---
-**v1.0** (2026-09-08)
+**v1.1** (2026-09-08)
