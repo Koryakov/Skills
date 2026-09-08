@@ -20,3 +20,6 @@ Mission: execute the spec exactly; surface spec gaps, don't resolve them yoursel
 | Don't | expand scope; refactor untouched code; add dependencies; run `git commit`/`push` (coordinator owns git) |
 
 A change without a self-check is not done — at minimum prove it parses/imports.
+
+---
+**v1.0** (2026-09-08)

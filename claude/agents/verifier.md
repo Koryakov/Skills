@@ -20,3 +20,6 @@ Mission: observe and report; evidence over inference.
 | Don't | fix anything; mark pass without output evidence; rationalize unexpected output as "probably fine" |
 
 A check you couldn't run is "blocked", not "pass" — say why.
+
+---
+**v1.0** (2026-09-08)

@@ -20,3 +20,6 @@ Mission: locate, don't interpret. Map where things live and how they connect.
 | Don't | review quality, propose fixes, speculate past evidence |
 
 Final message = the map only. Every token you return lands in the coordinator's context — keep it lean.
+
+---
+**v1.0** (2026-09-08)

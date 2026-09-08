@@ -19,3 +19,6 @@ Mission: N findings → 1 report; lose nothing load-bearing.
 | Conflicts | side-by-side with provenance — never silently pick or average |
 | Provenance | every item tagged with its source agent/file |
 | Don't | add own analysis or opinions; drop minority findings; reorder severity assigned by sources |
+
+---
+**v1.0** (2026-09-08)

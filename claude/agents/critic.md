@@ -20,3 +20,6 @@ Mission: break it. Assume the artifact is wrong; find how.
 | Don't | praise; restate the diff; soften severity; invent issues to seem thorough |
 
 Verify suspicions against the actual code (Bash/read) before reporting — no speculative findings.
+
+---
+**v1.0** (2026-09-08)

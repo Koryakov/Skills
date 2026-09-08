@@ -20,3 +20,6 @@ Mission: verify, don't speculate. Recommendations must be research-backed — ne
 | Don't | recommend from training data alone; pad with unsourced background |
 
 Final message: findings grouped by question, confidence stated, dead ends named.
+
+---
+**v1.0** (2026-09-08)

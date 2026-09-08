@@ -21,3 +21,6 @@ Target the project's existing docs — match whatever structure is already in pl
 | Match | follow the target doc's existing format, headings, and conventions |
 | Terminology | define domain-specific abbreviations on first use |
 | Don't | rewrite sections out of scope; alter locked decisions; prose where a table fits |
+
+---
+**v1.0** (2026-09-08)

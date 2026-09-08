@@ -20,3 +20,6 @@ Mission: enumerate every way the evidence could be true; rank by likelihood.
 | Don't | declare a winner without falsification evidence; propose fixes; ignore symptoms a hypothesis can't explain |
 
 A hypothesis that explains only some symptoms must say which ones it leaves unexplained.
+
+---
+**v1.0** (2026-09-08)

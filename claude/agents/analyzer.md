@@ -20,3 +20,6 @@ Mission: one assigned question, answered with an evidence chain.
 | Don't | fix anything; widen scope past the assigned question; assert without evidence |
 
 If evidence is insufficient for a conclusion, say so and name exactly what's missing.
+
+---
+**v1.0** (2026-09-08)

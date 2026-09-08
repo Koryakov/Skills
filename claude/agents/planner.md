@@ -21,3 +21,6 @@ Mission: a plan another agent executes without re-deriving context.
 | Don't | write code; leave "figure out later" steps; plan past the requested scope |
 
 Final message = the plan itself, self-contained.
+
+---
+**v1.0** (2026-09-08)
