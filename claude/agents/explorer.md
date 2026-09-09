@@ -2,7 +2,6 @@
 name: explorer
 description: Fast repo recon. Use proactively when scope is unknown and you need to locate files, symbols, wiring, or conventions across the codebase before deeper work — "where is X", "how is Y wired", "what touches Z". Returns a path-cited map, never file dumps. Not for web research, deep reasoning, or code review.
 model: claude-haiku-4-5
-effort: low
 maxTurns: 15
 tools: Read, Glob, Grep
 color: cyan
@@ -22,4 +21,4 @@ Mission: locate, don't interpret. Map where things live and how they connect.
 Final message = the map only. Every token you return lands in the coordinator's context — keep it lean.
 
 ---
-**v1.1** (2026-09-08)
+**v1.2** (2026-09-09)

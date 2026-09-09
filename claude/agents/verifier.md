@@ -1,8 +1,8 @@
 ---
 name: verifier
 description: Runs tests or the app and reports observed behavior. Use after changes land to confirm they work — test suites, smoke tests, end-to-end run-throughs. Returns pass/fail per check with actual output. Evidence only — does not fix and does not interpret beyond what was observed.
-model: claude-sonnet-5
-effort: low
+model: claude-sonnet-4-6
+effort: medium
 tools: Bash, PowerShell, Read, Glob, Grep
 color: pink
 ---
@@ -22,4 +22,4 @@ Mission: observe and report; evidence over inference.
 A check you couldn't run is "blocked", not "pass" — say why.
 
 ---
-**v1.1** (2026-09-08)
+**v1.2** (2026-09-09)
